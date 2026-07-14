@@ -92,10 +92,14 @@ public class App extends Application {
         setCellIcon(cellButtons[row][col], currentPlayer);
 
         if (checkWinner(currentPlayer)) {
-            gameOver = true;
             String winnerName = currentPlayer.equals(CAT) ? "Cat" : "Dog";
-            statusLabel.setText(winnerName + " wins!");
-            return; // Don't switch turns after a win
+            endGame(winnerName + " wins!");
+            return;
+        }
+
+        if (isBoardFull()) {
+            endGame("It's a draw!");
+            return;
         }
 
         isCatTurn = !isCatTurn;
@@ -103,7 +107,6 @@ public class App extends Application {
     }
 
     private boolean checkWinner(String player) {
-        // Check all rows
         for (int row = 0; row < BOARD_SIZE; row++) {
             if (player.equals(board[row][0])
                     && player.equals(board[row][1])
@@ -112,7 +115,6 @@ public class App extends Application {
             }
         }
 
-        // Check all columns
         for (int col = 0; col < BOARD_SIZE; col++) {
             if (player.equals(board[0][col])
                     && player.equals(board[1][col])
@@ -121,14 +123,12 @@ public class App extends Application {
             }
         }
 
-        // Check diagonal: top-left to bottom-right
         if (player.equals(board[0][0])
                 && player.equals(board[1][1])
                 && player.equals(board[2][2])) {
             return true;
         }
 
-        // Check diagonal: top-right to bottom-left
         if (player.equals(board[0][2])
                 && player.equals(board[1][1])
                 && player.equals(board[2][0])) {
@@ -136,6 +136,31 @@ public class App extends Application {
         }
 
         return false;
+    }
+
+    private boolean isBoardFull() {
+        for (int row = 0; row < BOARD_SIZE; row++) {
+            for (int col = 0; col < BOARD_SIZE; col++) {
+                if (board[row][col] == null) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private void endGame(String message) {
+        gameOver = true;
+        statusLabel.setText(message);
+        disableAllCells();
+    }
+
+    private void disableAllCells() {
+        for (int row = 0; row < BOARD_SIZE; row++) {
+            for (int col = 0; col < BOARD_SIZE; col++) {
+                cellButtons[row][col].setDisable(true);
+            }
+        }
     }
 
     private void setCellIcon(Button button, String player) {
