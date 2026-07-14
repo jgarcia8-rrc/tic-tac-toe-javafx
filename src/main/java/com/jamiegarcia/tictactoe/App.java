@@ -12,25 +12,18 @@ import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 
-/**
- * Entry point for the Tic Tac Toe application.
- * Builds the main window and handles player moves (Cat vs Dog).
- */
 public class App extends Application {
 
     private static final int BOARD_SIZE = 3;
     private static final String CAT = "CAT";
     private static final String DOG = "DOG";
 
-    // Tracks what's placed in each cell: null = empty, otherwise CAT or DOG.
-    // We'll use this same board in Milestone 4 to check for winners.
     private final String[][] board = new String[BOARD_SIZE][BOARD_SIZE];
-
-    // Keep references to the buttons so we can update their icons on click
     private final Button[][] cellButtons = new Button[BOARD_SIZE][BOARD_SIZE];
 
     private Label statusLabel;
-    private boolean isCatTurn = true; // Cat always moves first
+    private boolean isCatTurn = true;
+    private boolean gameOver = false;
 
     private Image catImage;
     private Image dogImage;
@@ -53,10 +46,6 @@ public class App extends Application {
         primaryStage.show();
     }
 
-    /**
-     * Loads the cat and dog images once at startup so we don't
-     * re-read the files from disk on every single click.
-     */
     private void loadImages() {
         catImage = new Image(getClass().getResourceAsStream("/images/cat.png"));
         dogImage = new Image(getClass().getResourceAsStream("/images/dog.png"));
@@ -70,9 +59,6 @@ public class App extends Application {
         return title;
     }
 
-    /**
-     * Builds the 3x3 grid of clickable cells.
-     */
     private GridPane createBoard() {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
@@ -84,8 +70,6 @@ public class App extends Application {
                 Button cell = new Button();
                 cell.setPrefSize(100, 100);
 
-                // row/col must be captured in final local variables
-                // to safely use them inside the click handler below
                 final int r = row;
                 final int c = col;
                 cell.setOnAction(event -> handleCellClick(r, c));
@@ -98,29 +82,62 @@ public class App extends Application {
         return grid;
     }
 
-    /**
-     * Handles a click on a board cell: ignores it if the cell is
-     * already taken, otherwise places the current player's icon
-     * and switches turns.
-     */
     private void handleCellClick(int row, int col) {
-        if (board[row][col] != null) {
-            return; // Cell already occupied - do nothing
+        if (gameOver || board[row][col] != null) {
+            return;
         }
 
         String currentPlayer = isCatTurn ? CAT : DOG;
         board[row][col] = currentPlayer;
-
         setCellIcon(cellButtons[row][col], currentPlayer);
+
+        if (checkWinner(currentPlayer)) {
+            gameOver = true;
+            String winnerName = currentPlayer.equals(CAT) ? "Cat" : "Dog";
+            statusLabel.setText(winnerName + " wins!");
+            return; // Don't switch turns after a win
+        }
 
         isCatTurn = !isCatTurn;
         updateStatusLabel();
     }
 
-    /**
-     * Displays the correct icon (cat or dog) on the given button
-     * and disables it so it can't be clicked again.
-     */
+    private boolean checkWinner(String player) {
+        // Check all rows
+        for (int row = 0; row < BOARD_SIZE; row++) {
+            if (player.equals(board[row][0])
+                    && player.equals(board[row][1])
+                    && player.equals(board[row][2])) {
+                return true;
+            }
+        }
+
+        // Check all columns
+        for (int col = 0; col < BOARD_SIZE; col++) {
+            if (player.equals(board[0][col])
+                    && player.equals(board[1][col])
+                    && player.equals(board[2][col])) {
+                return true;
+            }
+        }
+
+        // Check diagonal: top-left to bottom-right
+        if (player.equals(board[0][0])
+                && player.equals(board[1][1])
+                && player.equals(board[2][2])) {
+            return true;
+        }
+
+        // Check diagonal: top-right to bottom-left
+        if (player.equals(board[0][2])
+                && player.equals(board[1][1])
+                && player.equals(board[2][0])) {
+            return true;
+        }
+
+        return false;
+    }
+
     private void setCellIcon(Button button, String player) {
         Image image = player.equals(CAT) ? catImage : dogImage;
 
