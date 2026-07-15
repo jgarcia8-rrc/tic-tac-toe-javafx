@@ -10,6 +10,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
 public class App extends Application {
@@ -37,9 +38,9 @@ public class App extends Application {
 
         root.setTop(createTitle());
         root.setCenter(createBoard());
-        root.setBottom(createStatusLabel());
+        root.setBottom(createBottomSection());
 
-        Scene scene = new Scene(root, 450, 500);
+        Scene scene = new Scene(root, 450, 550);
 
         primaryStage.setTitle("Tic Tac Toe");
         primaryStage.setScene(scene);
@@ -80,6 +81,22 @@ public class App extends Application {
         }
 
         return grid;
+    }
+
+    private VBox createBottomSection() {
+        statusLabel = new Label("Cat's turn");
+        statusLabel.setStyle("-fx-font-size: 18px;");
+
+        Button restartButton = new Button("New Game");
+        restartButton.setStyle("-fx-font-size: 14px;");
+        restartButton.setOnAction(event -> resetGame());
+
+        VBox bottomBox = new VBox(15); // 15px spacing between children
+        bottomBox.setAlignment(Pos.CENTER);
+        bottomBox.getChildren().addAll(statusLabel, restartButton);
+        VBox.setMargin(bottomBox, new Insets(20, 0, 0, 0));
+
+        return bottomBox;
     }
 
     private void handleCellClick(int row, int col) {
@@ -163,6 +180,20 @@ public class App extends Application {
         }
     }
 
+    private void resetGame() {
+        for (int row = 0; row < BOARD_SIZE; row++) {
+            for (int col = 0; col < BOARD_SIZE; col++) {
+                board[row][col] = null;
+                cellButtons[row][col].setGraphic(null);
+                cellButtons[row][col].setDisable(false);
+            }
+        }
+
+        isCatTurn = true;
+        gameOver = false;
+        updateStatusLabel();
+    }
+
     private void setCellIcon(Button button, String player) {
         Image image = player.equals(CAT) ? catImage : dogImage;
 
@@ -173,14 +204,6 @@ public class App extends Application {
 
         button.setGraphic(imageView);
         button.setDisable(true);
-    }
-
-    private Label createStatusLabel() {
-        statusLabel = new Label("Cat's turn");
-        statusLabel.setStyle("-fx-font-size: 18px;");
-        BorderPane.setAlignment(statusLabel, Pos.CENTER);
-        BorderPane.setMargin(statusLabel, new Insets(20, 0, 0, 0));
-        return statusLabel;
     }
 
     private void updateStatusLabel() {
