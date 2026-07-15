@@ -13,13 +13,17 @@ import javafx.scene.layout.GridPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 
+/**
+ * Entry point and UI controller for the Tic Tac Toe application.
+ * This class is responsible for building the JavaFX interface and
+ * responding to user input. The actual game rules live in
+ * {@link GameLogic}, keeping this class focused purely on the UI.
+ */
 public class App extends Application {
 
-    private static final int BOARD_SIZE = 3;
-    private static final String CAT = "CAT";
-    private static final String DOG = "DOG";
+    private static final int BOARD_SIZE = GameLogic.BOARD_SIZE;
 
-    private final String[][] board = new String[BOARD_SIZE][BOARD_SIZE];
+    private final GameLogic gameLogic = new GameLogic();
     private final Button[][] cellButtons = new Button[BOARD_SIZE][BOARD_SIZE];
 
     private Label statusLabel;
@@ -49,6 +53,7 @@ public class App extends Application {
         primaryStage.show();
     }
 
+    /** Loads the cat and dog icons once at startup for reuse on every move. */
     private void loadImages() {
         catImage = new Image(getClass().getResourceAsStream("/images/cat.png"));
         dogImage = new Image(getClass().getResourceAsStream("/images/dog.png"));
@@ -62,6 +67,7 @@ public class App extends Application {
         return title;
     }
 
+    /** Builds the 3x3 grid of clickable board cells. */
     private GridPane createBoard() {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
@@ -86,6 +92,7 @@ public class App extends Application {
         return grid;
     }
 
+    /** Builds the status label and restart button shown below the board. */
     private VBox createBottomSection() {
         statusLabel = new Label("Cat's turn");
         statusLabel.getStyleClass().add("status-label");
@@ -104,22 +111,26 @@ public class App extends Application {
         return bottomBox;
     }
 
+    /**
+     * Handles a click on a board cell: places the current player's
+     * mark then checks for a win or draw.
+     */
     private void handleCellClick(int row, int col) {
-        if (gameOver || board[row][col] != null) {
+        if (gameOver || !gameLogic.isCellEmpty(row, col)) {
             return;
         }
 
-        String currentPlayer = isCatTurn ? CAT : DOG;
-        board[row][col] = currentPlayer;
+        String currentPlayer = isCatTurn ? GameLogic.CAT : GameLogic.DOG;
+        gameLogic.placeMark(row, col, currentPlayer);
         setCellIcon(cellButtons[row][col], currentPlayer);
 
-        if (checkWinner(currentPlayer)) {
-            String winnerName = currentPlayer.equals(CAT) ? "Cat" : "Dog";
+        if (gameLogic.checkWinner(currentPlayer)) {
+            String winnerName = currentPlayer.equals(GameLogic.CAT) ? "Cat" : "Dog";
             endGame(winnerName + " wins!");
             return;
         }
 
-        if (isBoardFull()) {
+        if (gameLogic.isBoardFull()) {
             endGame("It's a draw!");
             return;
         }
@@ -128,49 +139,7 @@ public class App extends Application {
         updateStatusLabel();
     }
 
-    private boolean checkWinner(String player) {
-        for (int row = 0; row < BOARD_SIZE; row++) {
-            if (player.equals(board[row][0])
-                    && player.equals(board[row][1])
-                    && player.equals(board[row][2])) {
-                return true;
-            }
-        }
-
-        for (int col = 0; col < BOARD_SIZE; col++) {
-            if (player.equals(board[0][col])
-                    && player.equals(board[1][col])
-                    && player.equals(board[2][col])) {
-                return true;
-            }
-        }
-
-        if (player.equals(board[0][0])
-                && player.equals(board[1][1])
-                && player.equals(board[2][2])) {
-            return true;
-        }
-
-        if (player.equals(board[0][2])
-                && player.equals(board[1][1])
-                && player.equals(board[2][0])) {
-            return true;
-        }
-
-        return false;
-    }
-
-    private boolean isBoardFull() {
-        for (int row = 0; row < BOARD_SIZE; row++) {
-            for (int col = 0; col < BOARD_SIZE; col++) {
-                if (board[row][col] == null) {
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
+    /** Ends the current game: locks the board and reveals the restart button. */
     private void endGame(String message) {
         gameOver = true;
         statusLabel.setText(message);
@@ -187,10 +156,12 @@ public class App extends Application {
         }
     }
 
+    /** Resets both the visual board and game logic for new round. */
     private void resetGame() {
+        gameLogic.reset();
+
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 0; col < BOARD_SIZE; col++) {
-                board[row][col] = null;
                 cellButtons[row][col].setGraphic(null);
                 cellButtons[row][col].setDisable(false);
             }
@@ -203,8 +174,9 @@ public class App extends Application {
         restartButton.setManaged(false);
     }
 
+    /** Displays the correct icon on a cell and disables it once played. */
     private void setCellIcon(Button button, String player) {
-        Image image = player.equals(CAT) ? catImage : dogImage;
+        Image image = player.equals(GameLogic.CAT) ? catImage : dogImage;
 
         ImageView imageView = new ImageView(image);
         imageView.setFitWidth(70);
