@@ -1,0 +1,64 @@
+.root {
+    -fx-background-color: linear-gradient(to bottom right, #eaf6f6, #dcefef);
+    -fx-font-family: "Segoe UI", "Helvetica Neue", Arial, sans-serif;
+}
+
+.title-label {
+    -fx-font-size: 32px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2f6f6f;
+}
+
+.status-label {
+    -fx-font-size: 20px;
+    -fx-font-weight: 600;
+    -fx-text-fill: #3a3a3a;
+}
+
+.cell-button {
+    -fx-background-color: #ffffff;
+    -fx-background-radius: 14px;
+    -fx-border-radius: 14px;
+    -fx-border-color: #b7dede;
+    -fx-border-width: 2px;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 6, 0, 0, 2);
+    -fx-cursor: hand;
+}
+
+.cell-button:hover {
+    -fx-background-color: #f0fbfb;
+    -fx-border-color: #6fbdbd;
+    -fx-scale-x: 1.03;
+    -fx-scale-y: 1.03;
+}
+
+.cell-button:disabled:hover {
+    -fx-background-color: #ffffff;
+    -fx-border-color: #b7dede;
+    -fx-scale-x: 1.0;
+    -fx-scale-y: 1.0;
+}
+
+.cell-button:disabled {
+    -fx-opacity: 1.0;
+    -fx-background-color: #ffffff;
+}
+
+.restart-button {
+    -fx-background-color: #4fa3a3;
+    -fx-text-fill: white;
+    -fx-font-size: 15px;
+    -fx-font-weight: 600;
+    -fx-background-radius: 24px;
+    -fx-padding: 10px 28px;
+    -fx-cursor: hand;
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.15), 6, 0, 0, 2);
+}
+
+.restart-button:hover {
+    -fx-background-color: #3d8a8a;
+}
+
+.restart-button:pressed {
+    -fx-background-color: #326f6f;
+}

@@ -41,6 +41,7 @@ public class App extends Application {
         root.setBottom(createBottomSection());
 
         Scene scene = new Scene(root, 450, 550);
+        scene.getStylesheets().add(getClass().getResource("/css/styles.css").toExternalForm());
 
         primaryStage.setTitle("Tic Tac Toe");
         primaryStage.setScene(scene);
@@ -54,7 +55,7 @@ public class App extends Application {
 
     private Label createTitle() {
         Label title = new Label("Tic Tac Toe");
-        title.setStyle("-fx-font-size: 28px; -fx-font-weight: bold;");
+        title.getStyleClass().add("title-label");
         BorderPane.setAlignment(title, Pos.CENTER);
         BorderPane.setMargin(title, new Insets(0, 0, 20, 0));
         return title;
@@ -63,13 +64,14 @@ public class App extends Application {
     private GridPane createBoard() {
         GridPane grid = new GridPane();
         grid.setAlignment(Pos.CENTER);
-        grid.setHgap(5);
-        grid.setVgap(5);
+        grid.setHgap(10);
+        grid.setVgap(10);
 
         for (int row = 0; row < BOARD_SIZE; row++) {
             for (int col = 0; col < BOARD_SIZE; col++) {
                 Button cell = new Button();
                 cell.setPrefSize(100, 100);
+                cell.getStyleClass().add("cell-button");
 
                 final int r = row;
                 final int c = col;
@@ -85,13 +87,13 @@ public class App extends Application {
 
     private VBox createBottomSection() {
         statusLabel = new Label("Cat's turn");
-        statusLabel.setStyle("-fx-font-size: 18px;");
+        statusLabel.getStyleClass().add("status-label");
 
         Button restartButton = new Button("New Game");
-        restartButton.setStyle("-fx-font-size: 14px;");
+        restartButton.getStyleClass().add("restart-button");
         restartButton.setOnAction(event -> resetGame());
 
-        VBox bottomBox = new VBox(15); // 15px spacing between children
+        VBox bottomBox = new VBox(15);
         bottomBox.setAlignment(Pos.CENTER);
         bottomBox.getChildren().addAll(statusLabel, restartButton);
         VBox.setMargin(bottomBox, new Insets(20, 0, 0, 0));
