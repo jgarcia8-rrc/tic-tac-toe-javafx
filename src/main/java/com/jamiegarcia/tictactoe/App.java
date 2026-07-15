@@ -23,6 +23,7 @@ public class App extends Application {
     private final Button[][] cellButtons = new Button[BOARD_SIZE][BOARD_SIZE];
 
     private Label statusLabel;
+    private Button restartButton;
     private boolean isCatTurn = true;
     private boolean gameOver = false;
 
@@ -89,9 +90,11 @@ public class App extends Application {
         statusLabel = new Label("Cat's turn");
         statusLabel.getStyleClass().add("status-label");
 
-        Button restartButton = new Button("New Game");
+        restartButton = new Button("New Game");
         restartButton.getStyleClass().add("restart-button");
         restartButton.setOnAction(event -> resetGame());
+        restartButton.setVisible(false);
+        restartButton.setManaged(false);
 
         VBox bottomBox = new VBox(15);
         bottomBox.setAlignment(Pos.CENTER);
@@ -172,6 +175,8 @@ public class App extends Application {
         gameOver = true;
         statusLabel.setText(message);
         disableAllCells();
+        restartButton.setVisible(true);
+        restartButton.setManaged(true);
     }
 
     private void disableAllCells() {
@@ -194,6 +199,8 @@ public class App extends Application {
         isCatTurn = true;
         gameOver = false;
         updateStatusLabel();
+        restartButton.setVisible(false);
+        restartButton.setManaged(false);
     }
 
     private void setCellIcon(Button button, String player) {
